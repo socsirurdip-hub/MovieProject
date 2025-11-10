@@ -1,21 +1,23 @@
 import { useState } from "react";
-import "./App.css";
+import "./css/App.css";
 import MovieCard from "./components/MovieCard.jsx";
+import Home from "./pages/Home.jsx";
+import {Routes, Route} from "react-router-dom"
+import Favorites from "./pages/Favorites.jsx";
+import Navbar from "./components/Navbar.jsx";
 
 function App() {
- 
-  const movie_number=2;
+  const movie_number = 2;
   return (
     <>
-    {movie_number===1 ?
-      (
-        <MovieCard movie={{title: "Inception", release_date: "2010", url: "https://image.tmdb.org/t/p/w500/qmDpIHrmpJINaRKAfWQfftjCdyi.jpg"}} />
-
-      ):
-      (
-        <MovieCard movie={{title: "Interstellar", release_date: "2014", url: "https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg"}} /> 
-      )
-    }   
+      <Navbar/>
+      <main className="main-content">
+        <Routes>
+          <Route path="/"  element={<Home />}/>
+          <Route path="/favorites"  element={<Favorites />}/>
+        </Routes>
+        
+      </main>
     </>
   );
 }
