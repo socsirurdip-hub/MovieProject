@@ -1,9 +1,20 @@
 import "../css/MovieCard.css"; // Adjust the path as necessary
+import { useMovieContext } from "../contexts/MovieContext.jsx";
 
 function MovieCard({movie}){
 
-    const onFavoriteClick=()=> {
-        alert("clicked");
+    const {isFavorite, addToFavorites, removeFromFavorites} = useMovieContext();
+
+    const favorite= isFavorite(movie.id);
+
+
+    const onFavoriteClick=(e)=> {
+        e.preventDefault();
+        if(favorite){
+            removeFromFavorites (movie.id);
+        }else{
+            addToFavorites(movie);
+        }
     }
     return(
         <>
@@ -11,7 +22,7 @@ function MovieCard({movie}){
             <div className="movie-poster">
                 <img src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} alt={movie.title}/>
                 <div className="movie-overlay">
-                    <button className="favorite-btn" onClick={onFavoriteClick}>
+                    <button className={`favorite-btn ${favorite? "active":""}`} onClick={onFavoriteClick}>
                         ♡
                     </button>
                 </div>
