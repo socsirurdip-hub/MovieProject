@@ -1,71 +1,86 @@
-import MovieCard from "../components/MovieCard";
-import { useState } from "react";
+import MovieCard from "../components/MovieCard.jsx";
+import { useState, useEffect } from "react";
 import "../css/Home.css";
+import { searchMovies,getPopularMovies } from "../services/api.js";  
+
 
 function Home() {
 
-  const[searchQuery, setSsearchQuery] = useState("");
+  const[searchQuery, setSearchQuery] = useState("");
+  const[movies, setMovies]= useState([]);
+  const[error,setError]= useState(null);
+  const[loading,setLoading]=useState(true);
 
-  // Sample movie data
-  const movies = [
-    {
-      title: "Inception",
-      release_date: 2010,
-      url: "https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg",
-    },
-    {
-      title: "Interstellar",
-      release_date: 2014,
-      url: "https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg",
-    },
-    {
-      title: "The Dark Knight",
-      release_date: 2008,
-      url: "https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg",
-    },
-    {
-      title: "Pulp Fiction",
-      release_date: 1994,
-      url: "https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg",
-    },
-    {
-      title: "The Matrix",
-      release_date: 1999,
-      url: "https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg",
-    },
-  ];
 
-  const handleSearch = (e) => {
+  useEffect(()=>{
+    const loadPopularMovies = async () =>{
+      try{
+        const popularMovies = await getPopularMovies();
+        setMovies(popularMovies);
+      }
+      catch(err){
+        setError("Failed to fetch popular movies.");
+        console.error(err);
+
+      }finally
+      {
+        setLoading(false)
+      }
+    }
+    loadPopularMovies();
+
+  },[]);
+ 
+
+  const handleSearch = async (e) => {
 
     e.preventDefault()
+    if(!searchQuery.trim()){
+      setError("Please enter a search query.");
+      return;
+    }
+    if(loading) return;
 
-    // Implement search functionality here
-    setSsearchQuery("------")
+    try {
 
-    
+      const searchResults = await searchMovies(searchQuery);
+      setMovies(searchResults);
+      setError(null);
+
+      
+    } catch (error) {
+      setError("Failed to search the movies.");
+      console.error(err);
+      
+    }
+    finally{
+      setLoading(false);
+    }    
   }
 
   return (
     <div className="home">
-      <h1>Welcome to the Movie Project Home Page</h1>
+
       <form onSubmit={handleSearch} className="search-form">
         <input 
         type="text" 
         placeholder="Search for a movie..." 
         className="search-input" 
         value={searchQuery}
-        onChange={(e)=> setSsearchQuery(e.target.value)} />
+        onChange={(e)=> setSearchQuery(e.target.value)} />
         <button type="submit" className="search-button">Search</button>
       </form>
-      <h2>Featured Movies</h2>
 
+      {error && <div className="error-message">{error}</div>}
+     
 
-      <div className="movie-grid">
-        {movies.map((movie,index) => {
-        
-          return <MovieCard movie={movie} key={index} />;
+      {loading ? (<div className="loading">Loading...</div>
+      ):(<div className="movies-grid">
+        {movies.map((movie,index) => {        
+          return <MovieCard movie={movie} key={movie.id} />;
         })}
-      </div>
+      </div>)}
+      
     </div>
   );
 }

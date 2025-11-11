@@ -1,15 +1,16 @@
 import { useState } from "react";
 import "./css/App.css";
-import MovieCard from "./components/MovieCard.jsx";
+
 import Home from "./pages/Home.jsx";
 import {Routes, Route} from "react-router-dom"
 import Favorites from "./pages/Favorites.jsx";
 import Navbar from "./components/Navbar.jsx";
+import { MovieProvider } from "./contexts/MovieContext.jsx";
 
 function App() {
   const movie_number = 2;
   return (
-    <>
+    <MovieProvider>
       <Navbar/>
       <main className="main-content">
         <Routes>
@@ -18,7 +19,7 @@ function App() {
         </Routes>
         
       </main>
-    </>
+    </MovieProvider>
   );
 }
 
